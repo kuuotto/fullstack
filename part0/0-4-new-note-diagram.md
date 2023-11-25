@@ -32,5 +32,5 @@ sequenceDiagram
     server-->>browser: data.json
     deactivate server
 
-    Note left of browser: executes the callback function that renders the notes
+    Note left of browser: executes the callback function in main.js that renders the notes
 ```
