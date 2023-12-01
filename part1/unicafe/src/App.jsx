@@ -45,19 +45,35 @@ const Statistics = ({ goodCount, neutralCount, badCount }) => {
         <div>
             <h2>Statistics</h2>
             {totalCount ? (
-                <>
-                    <p>good {goodCount}</p>
-                    <p>neutral {neutralCount}</p>
-                    <p>bad {badCount}</p>
-                    <p>all {totalCount}</p>
-                    <p>average {average}</p>
-                    <p>positive {goodProportion * 100}%</p>
-                </>
+                <table>
+                    <tbody>
+                        <StatisticLine text="good" value={goodCount} />
+                        <StatisticLine text="neutral" value={neutralCount} />
+                        <StatisticLine text="bad" value={badCount} />
+                        <StatisticLine text="total" value={totalCount} />
+                        <StatisticLine text="average" value={average} />
+                        <StatisticLine text="positive" value={goodProportion * 100} unit="%" />
+                    </tbody>
+                </table>
             ) : (
                 <p>No feedback given.</p>
             )}
         </div>
     )
+}
+
+const StatisticLine = ({ text, value, unit="" }) => {
+    // format number
+    let formattedValue = new Intl.NumberFormat('en-UK', 
+        { maximumFractionDigits: 2 }
+    ).format(value)
+
+    return (
+        <tr>
+            <th scope="row">{text}</th>
+            <td>{formattedValue}{unit}</td>
+        </tr>
+    ) 
 }
 
 export default App
