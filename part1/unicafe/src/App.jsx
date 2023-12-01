@@ -18,6 +18,10 @@ const App = () => {
         }
     }
 
+    const totalCount = goodCount + neutralCount + badCount
+    const average = (1 * goodCount + (-1) * badCount) / totalCount
+    const goodProportion = goodCount / totalCount
+
     return (
         <div>
             <h1>Give Feedback</h1>
@@ -28,6 +32,9 @@ const App = () => {
             <p>good {goodCount}</p>
             <p>neutral {neutralCount}</p>
             <p>bad {badCount}</p>
+            <p>all {totalCount}</p>
+            <p>average {average}</p>
+            {totalCount > 0 && <p>positive {goodProportion * 100}%</p>}
         </div>
     )
 }
