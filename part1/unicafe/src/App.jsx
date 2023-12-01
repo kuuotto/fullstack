@@ -18,16 +18,31 @@ const App = () => {
         }
     }
 
-    const totalCount = goodCount + neutralCount + badCount
-    const average = (1 * goodCount + (-1) * badCount) / totalCount
-    const goodProportion = goodCount / totalCount
-
     return (
         <div>
             <h1>Give Feedback</h1>
             <Button text="good" onClick={clickHandler("good")} />
             <Button text="neutral" onClick={clickHandler("neutral")} />
             <Button text="bad" onClick={clickHandler("bad")} />
+            <Statistics goodCount={goodCount} neutralCount={neutralCount} badCount={badCount} />
+        </div>
+    )
+}
+
+const Button = ({ text, onClick }) =>  <button onClick={onClick}>{text}</button>
+
+const Statistics = ({ goodCount, neutralCount, badCount }) => {
+    // calculate the total number of reviews
+    const totalCount = goodCount + neutralCount + badCount
+
+    // calculate average score
+    const average = (1 * goodCount + (-1) * badCount) / totalCount
+
+    // calculate proportion of good reviews
+    const goodProportion = goodCount / totalCount
+    
+    return (
+        <div>
             <h2>Statistics</h2>
             <p>good {goodCount}</p>
             <p>neutral {neutralCount}</p>
@@ -38,7 +53,5 @@ const App = () => {
         </div>
     )
 }
-
-const Button = ({ text, onClick }) =>  <button onClick={onClick}>{text}</button>
 
 export default App
