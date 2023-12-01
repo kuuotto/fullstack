@@ -40,16 +40,22 @@ const Statistics = ({ goodCount, neutralCount, badCount }) => {
 
     // calculate proportion of good reviews
     const goodProportion = goodCount / totalCount
-    
+
     return (
         <div>
             <h2>Statistics</h2>
-            <p>good {goodCount}</p>
-            <p>neutral {neutralCount}</p>
-            <p>bad {badCount}</p>
-            <p>all {totalCount}</p>
-            <p>average {average}</p>
-            {totalCount > 0 && <p>positive {goodProportion * 100}%</p>}
+            {totalCount ? (
+                <>
+                    <p>good {goodCount}</p>
+                    <p>neutral {neutralCount}</p>
+                    <p>bad {badCount}</p>
+                    <p>all {totalCount}</p>
+                    <p>average {average}</p>
+                    <p>positive {goodProportion * 100}%</p>
+                </>
+            ) : (
+                <p>No feedback given.</p>
+            )}
         </div>
     )
 }
