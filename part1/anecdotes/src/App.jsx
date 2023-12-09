@@ -16,22 +16,32 @@ const App = () => {
     const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
 
     const handleNextClick = () => {
+        // select a random anecdote
         setSelected(getRandomIndex(anecdotes.length))
     }
 
     const handleVoteClick = () => {
+        // increase the votes of the currently selected anecdote by one
         const newVotes = [...votes]
         newVotes[selected] += 1
         setVotes(newVotes)
-        console.log(newVotes)
     }
+
+    // determine the indices of the most popular anecdotes
+    const mostPopular = getMaxIndices(votes)
+
+    // determine if there are any votes
+    const voted = Math.max(...votes) > 0
 
     return (
         <div>
+            <h1>Anecdote of the Day</h1>
             {anecdotes[selected]}
-            <br />
+            <p>This anecdote has {votes[selected]} votes.</p>
             <Button onClick={handleNextClick} text="next anecdote" />
             <Button onClick={handleVoteClick} text="vote" />
+            <h2>Anecdote with Most Votes</h2>
+            {voted ? mostPopular.map(i => <p key={i}>{anecdotes[i]}</p>) : "No votes."}
         </div>
     )
 }
@@ -41,10 +51,11 @@ const getRandomIndex = (length) => {
     return Math.floor(Math.random() * length)
 }
 
-const Button = ({ text, onClick }) => {
-    return (
-        <button onClick={onClick}>{text}</button>
-    )
+const getMaxIndices = (array) => {
+    const max = Math.max(...array)
+    return array.reduce((currentMaxIndices, value, I, arr) => value === max ? [...currentMaxIndices, I] : currentMaxIndices, [])
 }
+
+const Button = ({ text, onClick }) => <button onClick={onClick}>{text}</button>
 
 export default App
