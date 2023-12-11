@@ -11,12 +11,19 @@ const App = () => {
         ]
     )
 
+    // function for adding a person to persons. This is a bit better than
+    // passing the setPersons directly, so that we have a bit more control over
+    // what the child component can do to the persons state.
+    const addPerson = (newPerson) => {
+        setPersons(persons.concat(newPerson))
+    }
+
     return (
         <div>
             <h1>Phonebook</h1>
             Welcome to the phonebook!
             <h2>Add a new contact</h2>
-            <AddContactForm persons={persons} setPersons={setPersons} />
+            <AddContactForm persons={persons} addPerson={addPerson} />
             <h2>Contacts</h2>
             <PersonList persons={persons} />
         </div>
@@ -31,7 +38,7 @@ const PersonDetails = ({ person }) => {
     )
 }
 
-const AddContactForm = ({ persons, setPersons }) => {
+const AddContactForm = ({ persons, addPerson }) => {
     // define states for the input elements
     const [newName, setNewName] = useState("")
     const [newNumber, setNewNumber] = useState("")
@@ -52,7 +59,7 @@ const AddContactForm = ({ persons, setPersons }) => {
         }
 
         // add to list of persons
-        setPersons(persons.concat(newPerson))
+        addPerson(newPerson)
 
         // clear input fields
         setNewName("")
