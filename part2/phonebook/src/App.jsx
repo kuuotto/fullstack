@@ -1,15 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const App = () => {
     // define states containing the list of person objects
-    const [persons, setPersons] = useState(
-        [
-            { name: 'Arto Hellas', number: '040-123456', id: 1 },
-            { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-            { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-            { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-        ]
-    )
+    const [persons, setPersons] = useState([])
 
     // function for adding a person to persons. This is a bit better than
     // passing the setPersons directly, so that we have a bit more control over
@@ -17,6 +11,15 @@ const App = () => {
     const addPerson = (newPerson) => {
         setPersons(persons.concat(newPerson))
     }
+
+    // load existing contact data with the use of effects
+    useEffect(() => {
+        axios
+            .get("http://localhost:3001/persons")
+            .then(response => {
+                setPersons(response.data)
+            })
+    }, [])
 
     return (
         <div>
@@ -56,6 +59,7 @@ const AddContactForm = ({ persons, addPerson }) => {
         const newPerson = {
             name: newName,
             number: newNumber,
+            id: persons.length + 1,
         }
 
         // add to list of persons
@@ -99,7 +103,7 @@ const PersonList = ({ persons }) => {
                 Search with name: <input value={filterTerm} onChange={event => setFilterTerm(event.target.value)} />
             </label>
             <div>
-                {personsToShow.map(person => <PersonDetails key={person.name} person={person} />)}
+                {personsToShow.map(person => <PersonDetails key={person.id} person={person} />)}
             </div>
         </div>
     )
