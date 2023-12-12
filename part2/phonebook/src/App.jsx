@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import contactsService from './services/contacts'
 
 const App = () => {
     // define states containing the list of person objects
@@ -9,15 +9,46 @@ const App = () => {
     // passing the setPersons directly, so that we have a bit more control over
     // what the child component can do to the persons state.
     const addPerson = (newPerson) => {
-        setPersons(persons.concat(newPerson))
+        contactsService
+            .createContact(newPerson)
+            .then(returnedPerson => {
+                setPersons(persons.concat(returnedPerson))
+            })
+    }
+
+    const deletePerson = id => {
+        // find person corresponding to the id
+        const person = persons.find(p => p.id === id)
+
+        // confirm with the user
+        if (!confirm(`Delete ${person.name} from your phonebook?`)) {
+            return
+        }
+
+        // delete from server
+        contactsService
+            .deleteContact(id)
+            .then(() => {
+                setPersons(persons.filter(p => p.id !== id))
+            })
+            .catch(error => console.log(error))
+    }
+
+    const updatePerson = (id, updatedPerson) => {
+        // send to server
+        contactsService
+            .updateContact(id, updatedPerson)
+            .then(returnedPerson => {
+                setPersons(persons.map(p => p.id === id ? returnedPerson : p))
+            })
     }
 
     // load existing contact data with the use of effects
     useEffect(() => {
-        axios
-            .get("http://localhost:3001/persons")
-            .then(response => {
-                setPersons(response.data)
+        contactsService
+            .getAllContacts()
+            .then(initialContacts => {
+                setPersons(initialContacts)
             })
     }, [])
 
@@ -26,22 +57,25 @@ const App = () => {
             <h1>Phonebook</h1>
             Welcome to the phonebook!
             <h2>Add a new contact</h2>
-            <AddContactForm persons={persons} addPerson={addPerson} />
+            <AddContactForm persons={persons} addPerson={addPerson} updatePerson={updatePerson}/>
             <h2>Contacts</h2>
-            <PersonList persons={persons} />
+            <PersonList persons={persons} deletePerson={deletePerson}/>
         </div>
     )
 }
 
-const PersonDetails = ({ person }) => {
+const PersonDetails = ({ person, deletePerson }) => {
     return (
         <>
-            <li>{person.name} {person.number}</li>
+            <li>
+                {person.name} {person.number}
+                <button onClick={deletePerson}>delete</button>
+            </li>
         </>
     )
 }
 
-const AddContactForm = ({ persons, addPerson }) => {
+const AddContactForm = ({ persons, addPerson, updatePerson }) => {
     // define states for the input elements
     const [newName, setNewName] = useState("")
     const [newNumber, setNewNumber] = useState("")
@@ -51,19 +85,30 @@ const AddContactForm = ({ persons, addPerson }) => {
 
         // check if person already exists
         if (persons.some(person => person.name === newName)) {
-            alert(`${newName} has already been added to the phonebook!`)
-            return
-        }
+            // number is updated if the user so desires
+            if (!confirm(`${newName} is already in the phonebook -- replace number with new one?`)) {
+                return
+            }
 
-        // create new person object
-        const newPerson = {
-            name: newName,
-            number: newNumber,
-            id: persons.length + 1,
-        }
+            // find the existing person
+            const person = persons.find(p => p.name === newName)
 
-        // add to list of persons
-        addPerson(newPerson)
+            // create a new person with an altered number
+            const updatedPerson = {...person, number: newNumber}
+
+            // update persons list
+            updatePerson(person.id, updatedPerson)
+
+        } else {
+            // create new person object
+            const newPerson = {
+                name: newName,
+                number: newNumber,
+            }
+    
+            // add to list of persons
+            addPerson(newPerson)
+        }
 
         // clear input fields
         setNewName("")
@@ -86,7 +131,7 @@ const AddContactForm = ({ persons, addPerson }) => {
     )
 }
 
-const PersonList = ({ persons }) => {
+const PersonList = ({ persons, deletePerson }) => {
     // I know that the exercise said to keep all states in the App component.
     // But the way I conceptualised this, the filter control is a part of the 
     // list displaying the persons and therefore I think the most suitable place
@@ -103,7 +148,7 @@ const PersonList = ({ persons }) => {
                 Search with name: <input value={filterTerm} onChange={event => setFilterTerm(event.target.value)} />
             </label>
             <div>
-                {personsToShow.map(person => <PersonDetails key={person.id} person={person} />)}
+                {personsToShow.map(person => <PersonDetails key={person.id} person={person} deletePerson={() => deletePerson(person.id)}/>)}
             </div>
         </div>
     )
