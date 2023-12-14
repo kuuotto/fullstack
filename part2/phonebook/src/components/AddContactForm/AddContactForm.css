@@ -1,0 +1,24 @@
+* {
+    box-sizing: border-box;
+}
+
+.formInput label, input {
+    display: block;
+    width: 100%
+}
+
+.formInput {
+    margin-bottom: 10px;
+}
+
+.justifyRight {
+    display: flex;
+    justify-content: flex-end;
+}
+
+form {
+    border-radius: 3px;
+    padding: 10px;
+    width: 200px;
+    background: whitesmoke;
+}

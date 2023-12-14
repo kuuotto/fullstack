@@ -1,0 +1,13 @@
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin-left: 5px;
+}
+
+.searchBox {
+    padding: 5px;
+    width: 200px;
+    background-color: whitesmoke;
+    border-radius: 5px;
+}
+
